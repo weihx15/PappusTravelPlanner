@@ -1,0 +1,38 @@
+name: Generate localization Dart files
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-localizations:
+    name: Generate localization Dart files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate localization Dart files
+        run: flutter gen-l10n
+
+      - name: Upload generated Dart files
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-localization-dart
+          path: lib/l10n/*.dart
+          if-no-files-found: error
+          retention-days: 7
